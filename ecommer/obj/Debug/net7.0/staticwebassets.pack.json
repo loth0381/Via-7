@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\obj\\Debug\\net7.0\\scopedcss\\projectbundle\\ecommer.bundle.scp.css",
+      "PackagePath": "staticwebassets\\ecommer.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\NoImage.png",
+      "PackagePath": "staticwebassets\\images\\NoImage.png"
+    },
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\hobbit.jfif",
+      "PackagePath": "staticwebassets\\images\\hobbit.jfif"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.build.ecommer.props",
+      "PackagePath": "build\\ecommer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildMultiTargeting.ecommer.props",
+      "PackagePath": "buildMultiTargeting\\ecommer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildTransitive.ecommer.props",
+      "PackagePath": "buildTransitive\\ecommer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.ecommer.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
