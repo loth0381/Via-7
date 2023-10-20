@@ -1,60 +1,65 @@
 ﻿@model ShoppingCart
 @{
-    ViewData["Title"] = "GetUserCart";
+    ViewData["Title"] = "Carrito de Compras";
 }
 
-<div style="width:90%;margin:auto" class="mt-2">
-    @if (Model != null && Model.CartDetails != null && Model.CartDetails.Count > 0)
-    {
-        <h5>My Cart</h5>
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h5>Mi Carrito de Compras</h5>
 
-        <table class="table table-striped">
-            <tr>
-                <th>Book</th>
-                <th>Image</th>
-                <th>Genre</th>
-                <th>Unit Price(INR)</th>
-                <th>Total Price</th>
-                <th>Action</th>
-            </tr>
-            @foreach (var item in Model.CartDetails)
+            @if (Model != null && Model.CartDetails != null && Model.CartDetails.Count > 0)
             {
-                <tr>
-                    <td>@item.Book.BookName</td>
-                    <td>
-                        @if (string.IsNullOrEmpty(item.Book.Image))
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Libro</th>
+                            <th>Imagen</th>
+                            <th>Género</th>
+                            <th>Precio Unitario (INR)</th>
+                            <th>Precio Total</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CartDetails)
                         {
-                            <img src="/images/NoImage.png" style="width:80px;height:100px" />
+                            <tr>
+                                <td>@item.Book.BookName</td>
+                                <td>
+                                    @if (string.IsNullOrEmpty(item.Book.Image))
+                                    {
+                                        <img src="/images/NoImage.png" class="img-thumbnail" style="max-width: 80px; max-height: 100px;" />
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/@item.Book.Image" class="img-thumbnail" style="max-width: 80px; max-height: 100px;" />
+                                    }
+                                </td>
+                                <td>@item.Book.Genre.GenreName</td>
+                                <td>@item.Book.Price INR X @item.Quantity</td>
+                                <td>@(item.Book.Price * item.Quantity) INR</td>
+                                <td>
+                                    <a class="btn btn-info" href="/Cart/AddItem?bookId=@item.BookId&redirect=1">+</a>
+                                    <a class="btn btn-info" href="/Cart/RemoveItem?bookId=@item.BookId">-</a>
+                                </td>
+                            </tr>
                         }
-                        else
-                        {
-                            <img src="/images/@item.Book.Image" style="width:80px;height:100px" />
-                        }
-                    </td>
-                    <td>@item.Book.Genre.GenreName</td>
-                    <td>@item.Book.Price X @item.Quantity</td>
-                    <td>@(item.Book.Price * item.Quantity)</td>
-                    <td>
-                        <a class="btn btn-info" href="/Cart/AddItem?bookId=@item.BookId&&redirect=1">+</a>
-                        <a class="btn btn-info" href="/cart/removeitem?bookid=@item.BookId">-</a>
-                    </td>
-                </tr>
+                    </tbody>
+                </table>
+
+                <div class="my-2">
+                    <h5>Total (INR): @Model.CartDetails.Select(item => item.Book.Price * item.Quantity).Sum()</h5>
+                </div>
+
+                <div class="my-2">
+                    <a asp-controller="Checkout" asp-action="Index" class="btn btn-primary">Realizar Pedido</a>
+                </div>
             }
-        </table>
-
-        <div class="my-2">
-            <h5>Total(INR): </h5>
-            @(Model.CartDetails.Select(item => item.Book.Price * item.Quantity).Sum())
+            else
+            {
+                <h5>El carrito está vacío</h5>
+            }
         </div>
-
-        <div class="my-2">
-            <a class="btn btn-primary" href="/Cart/Checkout">Checkout</a>
-        </div>
-
-    }
-    else
-    {
-        <h5>Cart is empty</h5>
-    }
+    </div>
 </div>
-

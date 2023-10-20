@@ -3,35 +3,58 @@ using Microsoft.AspNetCore.Identity;
 
 public class DbSeeder
 {
-    public static async Task SeedDefaultData(IServiceProvider service)
+    public static async Task SeedDefaultData(IServiceProvider serviceProvider)
     {
-        var userMgr = service.GetService<UserManager<IdentityUser>>();
-        var roleMgr = service.GetService<RoleManager<IdentityRole>>();
-
-        // Crear roles si no existen
-        if (!await roleMgr.RoleExistsAsync(Roles.Admin.ToString()))
+        try
         {
-            await roleMgr.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
+            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // Crear roles si no existen
+            await EnsureRoleExists(roleManager, Roles.Admin);
+            await EnsureRoleExists(roleManager, Roles.User);
+
+            // Crear el usuario administrador si no existe
+            await EnsureUserExists(userManager, "Henri@gmail.com", "Henri@123", Roles.Admin);
         }
-
-        if (!await roleMgr.RoleExistsAsync(Roles.User.ToString()))
+        catch (Exception ex)
         {
-            await roleMgr.CreateAsync(new IdentityRole(Roles.User.ToString()));
+            // Registra o notifica la excepción en lugar de imprimir un mensaje.
+            Console.WriteLine($"Error en la semilla de la base de datos: {ex.Message}");
         }
+    }
 
-        // Crear el usuario administrador si no existe
-        var admin = new IdentityUser
+    private static async Task EnsureRoleExists(RoleManager<IdentityRole> roleManager, string roleName)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
         {
-            UserName = "Henri@gmail.com",
-            Email = "Henri@gmail.com",
-            EmailConfirmed = true
-        };
+            var role = new IdentityRole(roleName);
+            await roleManager.CreateAsync(role);
+        }
+    }
 
-        var userInDb = await userMgr.FindByEmailAsync(admin.Email);
-        if (userInDb is null)
+    private static async Task EnsureUserExists(UserManager<IdentityUser> userManager, string email, string password, string role)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user is null)
         {
-            await userMgr.CreateAsync(admin, "Henri@123");
-            await userMgr.AddToRoleAsync(admin, Roles.Admin.ToString());
+            user = new IdentityUser
+            {
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(user, password);
+
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, role);
+            }
+            else
+            {
+                // Maneja el error de creación del usuario de manera adecuada.
+                Console.WriteLine($"Error al crear el usuario: {string.Join(", ", result.Errors)}");
+            }
         }
     }
 }

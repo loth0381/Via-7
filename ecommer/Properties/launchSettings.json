@@ -15,7 +15,8 @@
       "applicationUrl": "http://localhost:5119",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "serverReadyTimeout": 0
     },
     "https": {
       "commandName": "Project",
@@ -24,14 +25,16 @@
       "applicationUrl": "https://localhost:7203;http://localhost:5119",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "serverReadyTimeout": 0
     },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "serverReadyTimeout": 0
     }
   }
 }

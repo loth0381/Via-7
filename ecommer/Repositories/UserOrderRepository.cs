@@ -24,11 +24,11 @@ namespace ecommer.Repositories
             if (string.IsNullOrEmpty(userId))
                 throw new Exception("User is not logged-in");
             var orders = await _db.Orders
-                            .Include(x=>x.OrderStatus)
-                            .Include(x=>x.OrderDetail)
-                            .ThenInclude(x=>x.Book)
-                            .ThenInclude(x=>x.Genre)
-                            .Where(a=>a.UserId==userId)
+                            .Include(x => x.OrderStatus)
+                            .Include(x => x.OrderDetail)
+                            .ThenInclude(x => x.Book)
+                            .ThenInclude(x => x.Genre)
+                            .Where(a => a.UserId == userId)
                             .ToListAsync();
             return orders;
         }

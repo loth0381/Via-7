@@ -17,15 +17,20 @@ namespace ecommer.Repositories
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
         }
+
         public async Task<int> AddItem(int bookId, int qty)
         {
             string userId = GetUserId();
+
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("El usuario no ha iniciado sesión");
+
             using var transaction = _db.Database.BeginTransaction();
+
             try
             {
-                if (string.IsNullOrEmpty(userId))
-                    throw new Exception("user is not logged-in");
                 var cart = await GetCart(userId);
+
                 if (cart is null)
                 {
                     cart = new ShoppingCart
@@ -33,11 +38,13 @@ namespace ecommer.Repositories
                         UserId = userId
                     };
                     _db.ShoppingCarts.Add(cart);
+                    _db.SaveChanges();
                 }
-                _db.SaveChanges();
-                // cart detail section
+
+                // Cart detail section
                 var cartItem = _db.CartDetails
                                   .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.BookId == bookId);
+
                 if (cartItem is not null)
                 {
                     cartItem.Quantity += qty;
@@ -45,115 +52,138 @@ namespace ecommer.Repositories
                 else
                 {
                     var book = _db.Books.Find(bookId);
+
                     cartItem = new CartDetail
                     {
                         BookId = bookId,
                         ShoppingCartId = cart.Id,
                         Quantity = qty,
-                        UnitPrice = book.Price  // it is a new line after update
+                        UnitPrice = book.Price
                     };
+
                     _db.CartDetails.Add(cartItem);
                 }
+
                 _db.SaveChanges();
                 transaction.Commit();
             }
             catch (Exception ex)
             {
+                // Manejar la excepción de manera adecuada, como registrarla o notificarla
             }
+
             var cartItemCount = await GetCartItemCount(userId);
             return cartItemCount;
         }
-
 
         public async Task<int> RemoveItem(int bookId)
         {
             //using var transaction = _db.Database.BeginTransaction();
             string userId = GetUserId();
+
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("El usuario no ha iniciado sesión");
+
             try
             {
-                if (string.IsNullOrEmpty(userId))
-                    throw new Exception("user is not logged-in");
                 var cart = await GetCart(userId);
+
                 if (cart is null)
-                    throw new Exception("Invalid cart");
-                // cart detail section
+                    throw new Exception("Carrito no válido");
+
+                // Cart detail section
                 var cartItem = _db.CartDetails
                                   .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.BookId == bookId);
+
                 if (cartItem is null)
-                    throw new Exception("Not items in cart");
+                    throw new Exception("No hay elementos en el carrito");
                 else if (cartItem.Quantity == 1)
                     _db.CartDetails.Remove(cartItem);
                 else
                     cartItem.Quantity = cartItem.Quantity - 1;
+
                 _db.SaveChanges();
             }
             catch (Exception ex)
             {
-
+                // Manejar la excepción de manera adecuada, como registrarla o notificarla
             }
+
             var cartItemCount = await GetCartItemCount(userId);
             return cartItemCount;
         }
 
+
         public async Task<ShoppingCart> GetUserCart()
         {
             var userId = GetUserId();
+
             if (userId == null)
-                throw new Exception("Invalid userid");
+                throw new Exception("Usuario no válido");
+
             var shoppingCart = await _db.ShoppingCarts
                                   .Include(a => a.CartDetails)
                                   .ThenInclude(a => a.Book)
                                   .ThenInclude(a => a.Genre)
-                                  .Where(a => a.UserId == userId).FirstOrDefaultAsync();
-            return shoppingCart;
+                                  .Where(a => a.UserId == userId)
+                                  .FirstOrDefaultAsync();
 
+            return shoppingCart;
         }
+
         public async Task<ShoppingCart> GetCart(string userId)
         {
             var cart = await _db.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == userId);
             return cart;
         }
 
-        public async Task<int> GetCartItemCount(string userId = "")
+        public async Task<int> GetCartItemCount(string userId)
         {
-            if (!string.IsNullOrEmpty(userId))
-            {
-                userId = GetUserId();
-            }
-            var data = await (from cart in _db.ShoppingCarts
-                              join cartDetail in _db.CartDetails
-                              on cart.Id equals cartDetail.ShoppingCartId
-                              select new { cartDetail.Id }
-                        ).ToListAsync();
-            return data.Count;
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("Usuario no válido");
+
+            var cartItemCount = await _db.CartDetails
+                .Where(cd => cd.ShoppingCart.UserId == userId)
+                .CountAsync();
+
+            return cartItemCount;
         }
 
         public async Task<bool> DoCheckout()
         {
             using var transaction = _db.Database.BeginTransaction();
+
             try
             {
-                // logic
-                // move data from cartDetail to order and order detail then we will remove cart detail
+                // Lógica para mover datos de cartDetail a order y order detail, luego eliminar cartDetail
                 var userId = GetUserId();
+
                 if (string.IsNullOrEmpty(userId))
-                    throw new Exception("User is not logged-in");
+                    throw new Exception("El usuario no ha iniciado sesión");
+
                 var cart = await GetCart(userId);
+
                 if (cart is null)
-                    throw new Exception("Invalid cart");
+                    throw new Exception("Carrito no válido");
+
                 var cartDetail = _db.CartDetails
-                                    .Where(a => a.ShoppingCartId == cart.Id).ToList();
+                    .Where(a => a.ShoppingCartId == cart.Id)
+                    .ToList();
+
                 if (cartDetail.Count == 0)
-                    throw new Exception("Cart is empty");
+                    throw new Exception("El carrito está vacío");
+
                 var order = new Order
                 {
                     UserId = userId,
                     CreateDate = DateTime.UtcNow,
-                    OrderStatusId = 1//pending
+                    OrderStatusId = 1 // Pendiente
                 };
+
                 _db.Orders.Add(order);
                 _db.SaveChanges();
-                foreach(var item in cartDetail)
+
+                foreach (var item in cartDetail)
                 {
                     var orderDetail = new OrderDetail
                     {
@@ -162,19 +192,22 @@ namespace ecommer.Repositories
                         Quantity = item.Quantity,
                         UnitPrice = item.UnitPrice
                     };
+
                     _db.OrderDetails.Add(orderDetail);
                 }
+
                 _db.SaveChanges();
 
-                // removing the cartdetails
+                // Eliminar los detalles del carrito
                 _db.CartDetails.RemoveRange(cartDetail);
                 _db.SaveChanges();
+
                 transaction.Commit();
                 return true;
             }
             catch (Exception)
             {
-
+                // Manejar la excepción de manera adecuada, como registrarla o notificarla
                 return false;
             }
         }
@@ -185,7 +218,5 @@ namespace ecommer.Repositories
             string userId = _userManager.GetUserId(principal);
             return userId;
         }
-
-
     }
 }

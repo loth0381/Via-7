@@ -1,9 +1,8 @@
 ﻿@model IEnumerable<Order>
-@{
-}
-<div style="width:100%" class="mt-2">
-    <a href="/Identity/Account/Manage" class="btn btn-primary my-2">Back</a>
 
+<div style="width: 100%" class="mt-2">
+    <a href="/Identity/Account/Manage" class="btn btn-primary my-2">Back</a>
+    <a asp-page="/Checkout/Checkout" class="btn btn-primary">Realizar Pedido</a>
     <h4>My Orders</h4>
     @if (Model != null && Model.Count() > 0)
     {
@@ -18,7 +17,7 @@
                     <td>@order.CreateDate.ToString("dd-MM-yyyy")</td>
                     <td>@order.OrderStatus.StatusName</td>
                 </tr>
-                @if (order.OrderDetail != null && order.OrderDetail.Count > 0)
+                @if (order.OrderDetail != null && order.OrderDetail.Count() > 0)
                 {
                     <tr>
                         <td>
@@ -29,7 +28,6 @@
                                     </td>
                                     <td>
                                         @(order.OrderDetail.Select(item => item.Book.Price * item.Quantity).Sum())
-
                                     </td>
                                 </tr>
                                 <tr>
@@ -54,7 +52,7 @@
                                             }
                                         </td>
                                         <td>@item.Book.Genre.GenreName</td>
-                                        <td>@item.Book.Price X @item.Quantity</td>
+                                        <td>@(item.Book.Price * item.Quantity)</td>
                                         <td> @(item.Book.Price * item.Quantity) </td>
                                     </tr>
                                 }
@@ -64,14 +62,11 @@
                 }
             }
         </table>
-
     }
     else
     {
         <h5>No orders</h5>
     }
 </div>
-
-
 
 

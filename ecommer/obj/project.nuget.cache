@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bllwTcX8PBeC9ww6Uk+amz63cc8xRKcxubnN1DE3oYddb9IeyC1bKwNa4ZbaLQUH+hhWJAQv+LMmkky+bhIc/w==",
+  "dgSpecHash": "4C+1CSpAQRFHv1zjlrfI8+wqnGKNUrq9w0itbhVIYWxnY2bcgxSsKM2m++mSAf6I432JhK9+UoP7Bxxu2nokkg==",
   "success": true,
   "projectFilePath": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\ecommer.csproj",
   "expectedPackageFiles": [
@@ -158,6 +158,7 @@
     "C:\\Users\\u1921\\.nuget\\packages\\sqlitepclraw.core\\2.1.4\\sqlitepclraw.core.2.1.4.nupkg.sha512",
     "C:\\Users\\u1921\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.4\\sqlitepclraw.lib.e_sqlite3.2.1.4.nupkg.sha512",
     "C:\\Users\\u1921\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.4\\sqlitepclraw.provider.e_sqlite3.2.1.4.nupkg.sha512",
+    "C:\\Users\\u1921\\.nuget\\packages\\stripe.net\\43.0.0\\stripe.net.43.0.0.nupkg.sha512",
     "C:\\Users\\u1921\\.nuget\\packages\\system.appcontext\\4.3.0\\system.appcontext.4.3.0.nupkg.sha512",
     "C:\\Users\\u1921\\.nuget\\packages\\system.buffers\\4.3.0\\system.buffers.4.3.0.nupkg.sha512",
     "C:\\Users\\u1921\\.nuget\\packages\\system.codedom\\4.4.0\\system.codedom.4.4.0.nupkg.sha512",

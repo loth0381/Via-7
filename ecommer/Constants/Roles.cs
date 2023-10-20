@@ -1,8 +1,9 @@
 ﻿namespace ecommer.Constants
 {
-    public enum Roles
+    public static class Roles
     {
-        User=1,
-        Admin
+        public const string User = "User";
+        public const string Admin = "Admin";
+        // Agrega más roles si es necesario
     }
 }
