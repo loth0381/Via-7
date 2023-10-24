@@ -5,6 +5,7 @@ namespace ecommer.ViewModels
 {
     public class CheckoutViewModel
     {
+        public Order order { get; set; }
         public ShoppingCart Cart { get; set; }
 
         [Required(ErrorMessage = "El nombre es obligatorio.")]
@@ -19,10 +20,10 @@ namespace ecommer.ViewModels
         [Required(ErrorMessage = "El código postal es obligatorio.")]
         [RegularExpression(@"^\d{5}(-\d{4})?$", ErrorMessage = "Formato de código postal no válido.")]
         public string ZipCode { get; set; }
+
         public string StripePublishableKey { get; set; }
         public string StripeToken { get; set; }
 
         public List<CartDetail> CartDetails { get; set; }
-
     }
 }

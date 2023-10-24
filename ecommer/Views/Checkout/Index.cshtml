@@ -1,38 +1,195 @@
 ﻿@model ecommer.ViewModels.CheckoutViewModel
 
-<h2>Checkout</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+    <!-- Agrega enlaces a las hojas de estilo CSS aquí -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://bootswatch.com/5.3.2/minty/bootstrap.min.css">
+    <style>
+        /* Personaliza estilos específicos aquí */
+        .checkout-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .checkout-card {
+            border: none;
+            border-radius: 10px;
+        }
+        .checkout-title {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .checkout-img-thumbnail {
+            max-width: 80px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container checkout-container">
+        <div class="row">
+            <!-- Columna izquierda para detalles de envío -->
+            <div class="col-md-6">
+                <h2 class="checkout-title">Detalles de Envío</h2>
+                @using (Html.BeginForm("ProcessCheckout", "Checkout", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
 
-@using (Html.BeginForm("ProcessCheckout", "Checkout", FormMethod.Post))
-{
-    <div class="my-2">
-        <a asp-page="/Checkout/CarritoDeCompras">Ir al Carrito de Compras</a>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FullName, "Nombre completo")
+                        @Html.TextBoxFor(model => model.FullName, new { @class = "form-control", placeholder = "Nombre completo" })
+                        @Html.ValidationMessageFor(model => model.FullName)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Address, "Dirección")
+                        @Html.TextBoxFor(model => model.Address, new { @class = "form-control", placeholder = "Dirección" })
+                        @Html.ValidationMessageFor(model => model.Address)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.City, "Ciudad")
+                        @Html.TextBoxFor(model => model.City, new { @class = "form-control", placeholder = "Ciudad" })
+                        @Html.ValidationMessageFor(model => model.City)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ZipCode, "Código postal")
+                        @Html.TextBoxFor(model => model.ZipCode, new { @class = "form-control", placeholder = "Código postal" })
+                        @Html.ValidationMessageFor(model => model.ZipCode)
+                    </div>
+                }
+
+                <hr />
+            </div>
+
+            <!-- Columna derecha para el método de pago -->
+            <div class="col-md-6">
+                <h2 class="checkout-title">Método de Pago</h2>
+                <div class="card checkout-card">
+                    <div class="card-body">
+                        <label for="card-element">Tarjeta de crédito o débito</label>
+                        <div id="card-element">
+                            <!-- Elemento para mostrar el formulario de tarjeta de Stripe -->
+                        </div>
+                        <!-- Utiliza un contenedor para mostrar errores de validación -->
+                        <div id="card-errors" role="alert"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agregar una tabla para mostrar los detalles del carrito -->
+        <table class="table table-bordered table-striped my-4">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.CartDetails)
+                {
+                    <tr>
+                        <td>
+                            @if (string.IsNullOrEmpty(item.Book.Image))
+                            {
+                                <img src="/images/NoImage.png" class="img-thumbnail checkout-img-thumbnail" alt="No Image" />
+                            }
+                            else
+                            {
+                                <img src="/images/@item.Book.Image" class="img-thumbnail checkout-img-thumbnail" alt="@item.Book.BookName" />
+                            }
+                        </td>
+                        <td>@item.Book.BookName</td>
+                        <td>@item.Quantity</td>
+                        <td>$@item.Book.Price</td>
+                        <td>$@(item.Quantity * item.Book.Price)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <p class="text-right">Total: $@(Model.CartDetails.Sum(item => item.Quantity * item.Book.Price))</p>
+
+          <button type="submit" class="btn btn-primary">Realizar Pedido</button>
     </div>
 
-    @Html.AntiForgeryToken()
+    <hr />
+    @section scripts {
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+            var stripe = Stripe('tu_clave_publicable_de_stripe');
+            var elements = stripe.elements();
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.FullName)
-        @Html.TextBoxFor(model => model.FullName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.FullName)
-    </div>
+            // Personaliza el estilo de los elementos de Stripe
+            var style = {
+                base: {
+                    color: '#32325d',
+                    lineHeight: '24px',
+                    fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '16px',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                }
+            };
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Address)
-        @Html.TextBoxFor(model => model.Address, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.Address)
-    </div>
+            var card = elements.create('card', { style: style });
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.City)
-        @Html.TextBoxFor(model => model.City, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.City)
-    </div>
+            card.mount('#card-element');
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.ZipCode)
-        @Html.TextBoxFor(model => model.ZipCode, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.ZipCode)
-    </div>
+            card.addEventListener('change', function (event) {
+                var displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
 
-    <a asp-controller="Payment" asp-action="Index" type="submit" class="btn btn-primary">Realizar Pedido</a>
-}
+            var form = document.querySelector('form');
+            var submitButton = document.getElementById('submit');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                stripe.createToken(card).then(function (result) {
+                    if (result.error) {
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                    } else {
+                        stripeTokenHandler(result.token);
+                    }
+                });
+            });
+
+            function stripeTokenHandler(token) {
+                // Inserta el token en un campo oculto para enviarlo al servidor
+                var form = document.querySelector('form');
+                var hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'StripeToken');
+                hiddenInput.setAttribute('value', token.id);
+                form.appendChild(hiddenInput);
+
+                // Envia el formulario al controlador para procesar el pago
+                form.submit();
+            }
+        </script>
+    }
+</body>
+</html>

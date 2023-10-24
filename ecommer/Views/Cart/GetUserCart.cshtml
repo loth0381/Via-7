@@ -17,6 +17,7 @@
                             <th>Imagen</th>
                             <th>Género</th>
                             <th>Precio Unitario (INR)</th>
+                            <th>Cantidad</th>
                             <th>Precio Total</th>
                             <th>Acción</th>
                         </tr>
@@ -27,17 +28,11 @@
                             <tr>
                                 <td>@item.Book.BookName</td>
                                 <td>
-                                    @if (string.IsNullOrEmpty(item.Book.Image))
-                                    {
-                                        <img src="/images/NoImage.png" class="img-thumbnail" style="max-width: 80px; max-height: 100px;" />
-                                    }
-                                    else
-                                    {
-                                        <img src="/images/@item.Book.Image" class="img-thumbnail" style="max-width: 80px; max-height: 100px;" />
-                                    }
+                                    <img src="@(string.IsNullOrEmpty(item.Book.Image) ? "/images/NoImage.png" : $"/images/{item.Book.Image}")" class="img-thumbnail" style="max-width: 80px; max-height: 100px;" alt="Imagen del libro" />
                                 </td>
                                 <td>@item.Book.Genre.GenreName</td>
-                                <td>@item.Book.Price INR X @item.Quantity</td>
+                                <td>@item.Book.Price INR</td>
+                                <td>@item.Quantity</td>
                                 <td>@(item.Book.Price * item.Quantity) INR</td>
                                 <td>
                                     <a class="btn btn-info" href="/Cart/AddItem?bookId=@item.BookId&redirect=1">+</a>
@@ -49,7 +44,7 @@
                 </table>
 
                 <div class="my-2">
-                    <h5>Total (INR): @Model.CartDetails.Select(item => item.Book.Price * item.Quantity).Sum()</h5>
+                    <h5>Total (INR): @Model.CartDetails.Sum(item => item.Book.Price * item.Quantity)</h5>
                 </div>
 
                 <div class="my-2">

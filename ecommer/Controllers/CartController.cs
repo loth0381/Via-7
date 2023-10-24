@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity; // Añadido para UserManager
+using Microsoft.AspNetCore.Identity;
 using ecommer.Repositories;
 using System;
 using Microsoft.AspNetCore.Http;
@@ -11,13 +11,13 @@ namespace ecommer.Controllers
     public class CartController : Controller
     {
         private readonly ICartRepository _cartRepo;
-        private readonly UserManager<IdentityUser> _userManager; // Inyectar UserManager
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CartController(ICartRepository cartRepo, UserManager<IdentityUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _cartRepo = cartRepo;
-            _userManager = userManager; // Asignar UserManager
+            _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -52,9 +52,13 @@ namespace ecommer.Controllers
         {
             var userId = GetUserId();
             bool isCheckedOut = await _cartRepo.DoCheckout();
+
             if (!isCheckedOut)
-                throw new Exception("Algo salió mal en el servidor");
-            return RedirectToAction("Index", "Checkout"); // Redirigir a "Index" en el controlador "Checkout"
+            {
+                return BadRequest("No se pudo completar la operación.");
+            }
+
+            return RedirectToAction("Index", "Checkout");
         }
 
         private string GetUserId()
@@ -63,9 +67,5 @@ namespace ecommer.Controllers
             string userId = _userManager.GetUserId(principal);
             return userId;
         }
-
     }
-
-
 }
-

@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Configuración de identidad
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -42,6 +43,7 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
+
 // Configurar el pipeline de solicitudes HTTP
 if (app.Environment.IsDevelopment())
 {
@@ -61,12 +63,20 @@ app.UseSession();
 
 app.UseRouting();
 
-app.UseAuthentication();  // Agrega autenticación
+app.UseAuthentication();  // Agrega autenticaciónÑ{ 
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"); // Ajusta la ruta predeterminada según tus necesidades
+
+// Agrega una ruta personalizada para la confirmación del pedido
+app.MapControllerRoute(
+    name: "confirmation",
+    pattern: "Checkout/Confirmation",
+    defaults: new { controller = "Checkout", action = "Confirmation" }
+);
+
 app.MapRazorPages();
 
 // Sembrar la base de datos
@@ -76,7 +86,11 @@ using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate(); // Aplicar migraciones automáticamente
+
+        // Aplicar migraciones automáticamente si es necesario
+        context.Database.Migrate();
+
+        // Sembrar datos por defecto
         await DbSeeder.SeedDefaultData(services);
     }
     catch (Exception ex)

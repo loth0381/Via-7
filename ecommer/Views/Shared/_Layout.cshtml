@@ -3,26 +3,28 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Via 7 - Store</title> <!-- Aumentamos el tamaño del título y cambiamos el texto -->
+    <title>Via 7 - Store</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <style>
-        /* Agrega estilos personalizados aquí para hacer el footer más grande si es necesario */
+        /* Estilos personalizados */
         .footer {
-            background-color: #333; /* Color de fondo igual al navbar */
+            background-color: #333;
             color: #fff;
             padding: 30px 0;
         }
 
         .navbar {
             max-width: 100%;
-            padding: 13px 0; /* Aumentamos el espacio en la parte superior e inferior del navbar */
+            padding: 13px 0;
         }
-        .textTamaño{
-            font-size:20px
+
+        .textTamaño {
+            font-size: 20px;
         }
+
         .navbar-brand {
-            font-size: 36px; /* Aumentamos el tamaño del texto del navbar */
+            font-size: 36px;
         }
 
         .container {
@@ -30,18 +32,17 @@
         }
 
         .content {
-            min-height: calc(100vh - 160px); /* 160px es la altura aproximada de la barra de navegación y el footer */
+            min-height: calc(100vh - 160px);
             padding: 20px;
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
+        <div class="container">
             <a class="navbar-brand" href="/Home/Index">Via 7</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-                <span
-                    class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <ul class="navbar-nav me-auto">
@@ -55,7 +56,7 @@
                         <a class="nav-link textTamaño" href="/Home/Privacy">Privacy</a>
                     </li>
                 </ul>
-                <h5> <partial name="_LoginPartial" /></h5>
+                <h5><partial name="_LoginPartial" /></h5>
             </div>
         </div>
     </nav>
@@ -63,24 +64,21 @@
         @RenderBody()
     </div>
 
-
     @RenderSection("Scripts", required: false)
-
-    <!-- Código JavaScript adicional si es necesario -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <script>
         loadCartCount();
+
         async function loadCartCount() {
             try {
                 var response = await fetch(`/Cart/GetTotalItemInCart`);
-                if (response.status == 200) {
+                if (response.status === 200) {
                     var result = await response.json();
                     var cartCountEl = document.getElementById("cartCount");
                     cartCountEl.innerHTML = result;
                 }
-            }
-            catch (err) {
+            } catch (err) {
                 console.log(err);
             }
         }

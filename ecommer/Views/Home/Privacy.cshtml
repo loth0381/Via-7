@@ -1,6 +1,19 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿
+@model ecommer.Models.Book
 
-<p>Use this page to detail your site's privacy policy.</p>
+@if (Model != null)
+{
+    <h1>@Model.BookName</h1>
+    <p>Autor: @Model.AuthorName</p>
+    <p>Precio: @Model.Price</p>
+    <img src="~/images/@(string.IsNullOrEmpty(Model.Image) ? "NoImage.png" : Model.Image)" alt="Portada del libro" />
+
+    <p>Descripción:</p>
+    <!-- Agrega aquí cualquier otra propiedad del libro que desees mostrar -->
+
+    <a asp-controller="Cart" asp-action="AddToCart" asp-route-bookId="@Model.Id">Agregar al carrito</a>
+}
+else
+{
+    <p>El libro no se encontró.</p>
+}

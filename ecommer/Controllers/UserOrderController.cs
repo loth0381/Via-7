@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace ecommer.Controllers
 {
@@ -12,10 +14,26 @@ namespace ecommer.Controllers
         {
             _userOrderRepo = userOrderRepo;
         }
+
         public async Task<IActionResult> UserOrders()
         {
-            var orders = await _userOrderRepo.UserOrders();
-            return View(orders);
+            try
+            {
+                var orders = await _userOrderRepo.UserOrders();
+
+                if (orders == null)
+                {
+                    // Manejar la situación en la que no se pueden recuperar órdenes.
+                    return View("NoOrders");
+                }
+
+                return View(orders);
+            }
+            catch (Exception ex)
+            {
+                // Manejar errores inesperados, por ejemplo, registrar y notificar.
+                return View("Error");
+            }
         }
     }
 }
