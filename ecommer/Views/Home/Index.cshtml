@@ -1,82 +1,80 @@
-﻿    @model BookDisplayModel
+﻿@model BookDisplayModel
 
-    <div class="my-2">
-        <form asp-action="Index" class="row row-cols-lg-auto g-3 align-items-center">
-            <div class="col-12">
-                <label class="visually-hidden" for="genreId">
-                    Géneros
-                </label>
-                <select class="form-select" id="genreId" name="genreId">
-                    <option value="">
-                        Géneros
-                    </option>
-                    @foreach (var genre in Model.Genres)
-                    {
-                        <option value="@genre.Id" selected="@(genre.Id == Model.GenreId)">@genre.GenreName</option>
-                    }
-                </select>
-            </div>
+<div class="my-2">
+    <form asp-action="Index" class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="col-12">
+            <label class="visually-hidden" for="genreId">
+                Productos
+            </label>
+            <select class="form-select" id="genreId" name="genreId">
+                <option value="">Productos</option>
+                @foreach (var genre in Model.Genres)
+                {
+                    <option value="@genre.Id" selected="@(genre.Id == Model.GenreId)">@genre.GenreName</option>
+                }
+            </select>
+        </div>
 
-            <div class="col-12">
-                <label class="visually-hidden" for="sterm">Search by title</label>
-                <div class="input-group">
-                    <div class="input-group-text"></div>
-                    <input type="text" class="form-control" id="sterm" name="sterm" value="@Model.STerm" placeholder="
-    Buscar por título">
-                </div>
+        <div class="col-12">
+            <label class="visually-hidden" for="sterm">Buscar por título</label>
+            <div class="input-group">
+                <div class="input-group-text"></div>
+                <input type="text" class="form-control" id="sterm" name="sterm" value="@Model.STerm" placeholder="Buscar por título">
             </div>
+        </div>
 
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                    Buscar
-                </button>
-                <a href="/Home/Index" class="btn btn-dark">Reiniciar</a>
-            </div>
-        </form>
-    </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            <a href="/Home/Index" class="btn btn-dark">Reiniciar</a>
+        </div>
+    </form>
+</div>
 
 <div class="w-100 mt-4 d-flex flex-wrap">
     @foreach (var book in Model.Books)
     {
-        <div class="card mx-3 mb-4" style="width: 11rem;">
-
-            <a asp-controller="Home" asp-action="Privacy" asp-route-id="@book.Id">
-                <img src="@Url.Content(string.IsNullOrEmpty(book.Image) ? "/images/NoImage.png" : $"/images/{book.Image}")" class="card-img-top" alt="...">
-            </a>
+        <div class="card mx-3 mb-4" style="width: 15rem;">
+            <img src="@Url.Content(string.IsNullOrEmpty(book.Image) ? "/images/NoImage.png" : $"/images/{book.Image}")" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">@book.BookName</h5>
                 <p class="card-text">
                     <b>Género: </b>@book.GenreName <br />
-                    <b>Autor: </b>@book.AuthorName <br />
-                    <b>Precio: </b>@book.Price
+                    <b>Precio: $</b>@book.Price
                 </p>
-                <button type="button" onclick="addToCart(@book.Id)" class="btn btn-primary">
-                    Añadir a la cesta
-                </button>
+                <button type="button" onclick="addToCart(@book.Id)" class="btn btn-primary">Añadir a la cesta</button>
             </div>
         </div>
     }
 </div>
 
-    @section Scripts {
-        <script>
-            async function addToCart(bookId) {
-                var usernameEl = document.getElementById("username");
-                if (!usernameEl) {
-                    window.location.href = "/Identity/Account/Login";
-                }
-                try {
-                    var response = await fetch(`/Cart/AddItem?bookId=${bookId}`);
-                    if (response.status === 200) {
-                        var result = await response.json();
-                        var cartCountEl = document.getElementById("cartCount");
-                        cartCountEl.innerHTML = result;
-                        window.location.href = "#cartCount";
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-        </script>
-    }
+@section Scripts {
+    <style>
+        .card {
+            width: 15rem; /* Establece un ancho fijo para todos los cuadros */
+        }
 
+        .card-img-top {
+            height: 200px; /* Establece una altura fija para todas las imágenes */
+            object-fit: cover;
+        }
+    </style>
+    <script>
+        async function addToCart(bookId) {
+            var usernameEl = document.getElementById("username");
+            if (!usernameEl) {
+                window.location.href = "/Identity/Account/Login";
+            }
+            try {
+                var response = await fetch(`/Cart/AddItem?bookId=${bookId}`);
+                if (response.status === 200) {
+                    var result = await response.json();
+                    var cartCountEl = document.getElementById("cartCount");
+                    cartCountEl.innerHTML = result;
+                    window.location.href = "#cartCount";
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    </script>
+}

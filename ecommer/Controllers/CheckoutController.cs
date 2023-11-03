@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ecommer.Repositories;
 using ecommer.Models;
-using ecommer.ViewModels; // Asegúrate de que el espacio de nombres 'ViewModels' esté referenciado.
+using ecommer.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using Stripe;
 
 namespace ecommer.Controllers
 {
@@ -26,65 +25,71 @@ namespace ecommer.Controllers
             {
                 var cart = await _cartRepo.GetUserCart();
 
-                if (cart == null)
+                if (cart == null || cart.CartDetails == null || cart.CartDetails.Count == 0)
                 {
+                    // Redirige al usuario a la página de "Carrito Vacío" si el carrito está vacío.
                     return RedirectToAction("EmptyCart");
                 }
+
+                // Obtén la clave de publicación de Stripe desde tu configuración
+                var stripePublishableKey = "pk_test_51NhKybH28o0wLQaAgW5ShASKKcBMFiwKdY20TlnCTQuVG3Qgd7V0Ck39NSYeqIZ8AVMVjNTRPzptqCLsEMyamqJN00sTdRjrqQ"; // Reemplaza con tu clave de Stripe
 
                 var checkoutModel = new CheckoutViewModel
                 {
                     Cart = cart,
-                    CartDetails = cart.CartDetails?.ToList() ?? new List<CartDetail>()
+                    CartDetails = cart.CartDetails.ToList(),
+                    StripePublishableKey = stripePublishableKey
                 };
 
                 return View(checkoutModel);
             }
             catch (Exception ex)
             {
-                // Manejar excepciones de manera adecuada, como registrar el error o redirigir a una página de error.
+                // Registra el error o maneja las excepciones de manera adecuada.
+                // Puedes redirigir al usuario a la página de "Error" en caso de un error crítico.
                 return RedirectToAction("Error");
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ProcessCheckout(CheckoutViewModel model)
+        public async Task<IActionResult> ProcessCheckout(CheckoutViewModel model)
         {
             if (!ModelState.IsValid)
             {
+                // Si el modelo no es válido, vuelve a la página de "Checkout" con los errores.
                 return View("Index", model);
             }
 
             try
             {
-                // Aquí puedes agregar la lógica para guardar el pedido y la información del usuario en la base de datos.
-                // Por ejemplo, puedes usar el CartRepository para guardar los detalles del pedido en la base de datos.
+                // Aquí deberías utilizar la biblioteca de Stripe para procesar el pago.
+                StripeConfiguration.ApiKey = "sk_test_51NhKybH28o0wLQaAqJB9q4hYbpACwXC7jw93b8LtEV6jjBBJC0Sgac9N84orqSxXYPcRWCKvDFSGhuPLypJZVQPr00HmNbjpsX"; // Reemplaza con tu clave secreta de Stripe
 
-                // Redirigir a una página de confirmación después del checkout
+                var options = new ChargeCreateOptions
+                {
+                    Amount = (long)(model.CartDetails.Sum(item => item.Quantity * item.Book.Price) * 100), // Monto en centavos
+                    Currency = "usd", // Moneda (cambia según tu configuración)
+                    Description = "Compra en tu tienda en línea",
+                    Source = model.StripeToken, // El token de la tarjeta de crédito
+                };
+
+                var service = new ChargeService();
+                var charge = service.Create(options);
+
+                // Después de procesar el pago con éxito, puedes guardar la información del pedido en la base de datos, si es necesario.
+
+                // Redirige al usuario a la página de "Confirmación" después del checkout exitoso.
                 return RedirectToAction("Confirmation");
             }
             catch (Exception ex)
             {
-                // Manejar excepciones de manera adecuada, como registrar el error o redirigir a una página de error.
+                // Registra el error o maneja las excepciones de manera adecuada.
+                // Puedes redirigir al usuario a la página de "Error" en caso de un error crítico.
                 return RedirectToAction("Error");
             }
         }
 
-        public IActionResult Confirmation()
-        {
-            return View();
-        }
-
-        public IActionResult EmptyCart()
-        {
-            // Página de carrito vacío (puedes personalizarla según tus necesidades)
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            // Página de error (puedes personalizarla según tus necesidades)
-            return View();
-        }
+        // Resto de las acciones del controlador (Confirmation, EmptyCart, Error) aquí.
     }
 }

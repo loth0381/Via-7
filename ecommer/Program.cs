@@ -30,9 +30,6 @@ builder.Services.AddTransient<IHomeRepository, HomeRepository>();
 builder.Services.AddTransient<ICartRepository, CartRepository>();
 builder.Services.AddTransient<IUserOrderRepository, UserOrderRepository>();
 
-// Configuración de Stripe
-builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-
 builder.Services.AddControllersWithViews();
 
 // Agregar configuración de sesiones si las usas para mantener el estado del carrito
@@ -42,7 +39,6 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
-
 
 // Configurar el pipeline de solicitudes HTTP
 if (app.Environment.IsDevelopment())
@@ -63,7 +59,7 @@ app.UseSession();
 
 app.UseRouting();
 
-app.UseAuthentication();  // Agrega autenticaciónÑ{ 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

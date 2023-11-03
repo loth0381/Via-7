@@ -1,19 +1,57 @@
-﻿
-@model ecommer.Models.Book
-
-@if (Model != null)
-{
-    <h1>@Model.BookName</h1>
-    <p>Autor: @Model.AuthorName</p>
-    <p>Precio: @Model.Price</p>
-    <img src="~/images/@(string.IsNullOrEmpty(Model.Image) ? "NoImage.png" : Model.Image)" alt="Portada del libro" />
-
-    <p>Descripción:</p>
-    <!-- Agrega aquí cualquier otra propiedad del libro que desees mostrar -->
-
-    <a asp-controller="Cart" asp-action="AddToCart" asp-route-bookId="@Model.Id">Agregar al carrito</a>
+﻿@{
+    ViewData["Title"] = "Confirmación de Pago";
 }
-else
-{
-    <p>El libro no se encontró.</p>
-}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <!-- Agrega enlaces a las hojas de estilo CSS aquí -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/css/bootstrap.min.css">
+    <style>
+        /* Estilos personalizados */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .confirmation-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .confirmation-title {
+            color: #28a745;
+            font-size: 24px;
+        }
+
+        .confirmation-message {
+            font-size: 18px;
+        }
+
+        .additional-content {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container confirmation-container">
+        <h2 class="confirmation-title">¡Pago Confirmado!</h2>
+        <p class="confirmation-message">Gracias por tu compra. Tu pago ha sido confirmado con éxito.</p>
+
+        <!-- Contenido adicional -->
+        <div class="additional-content">
+            <h3>Detalles de la Compra</h3>
+            <p>Fecha de compra: @DateTime.Now</p>
+
+            <h3>Próximos Pasos</h3>
+            <p>Tu pedido será procesado y enviado en breve. Recibirás una confirmación de envío en tu correo electrónico.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using ecommer.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ecommer.Repositories
 {
@@ -10,8 +14,7 @@ namespace ecommer.Repositories
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CartRepository(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor,
-            UserManager<IdentityUser> userManager)
+        public CartRepository(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
         {
             _db = db;
             _userManager = userManager;
@@ -31,27 +34,26 @@ namespace ecommer.Repositories
             {
                 var cart = await GetCart(userId);
 
-                if (cart is null)
+                if (cart == null)
                 {
                     cart = new ShoppingCart
                     {
                         UserId = userId
                     };
                     _db.ShoppingCarts.Add(cart);
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync();
                 }
 
-                // Cart detail section
                 var cartItem = _db.CartDetails
-                                  .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.BookId == bookId);
+                    .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.BookId == bookId);
 
-                if (cartItem is not null)
+                if (cartItem != null)
                 {
                     cartItem.Quantity += qty;
                 }
                 else
                 {
-                    var book = _db.Books.Find(bookId);
+                    var book = await _db.Books.FindAsync(bookId);
 
                     cartItem = new CartDetail
                     {
@@ -64,21 +66,21 @@ namespace ecommer.Repositories
                     _db.CartDetails.Add(cartItem);
                 }
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
                 transaction.Commit();
             }
             catch (Exception ex)
             {
-                // Manejar la excepción de manera adecuada, como registrarla o notificarla
+                // Registra o notifica la excepción de manera adecuada
+                transaction.Rollback();
+                throw;
             }
 
-            var cartItemCount = await GetCartItemCount(userId);
-            return cartItemCount;
+            return await GetCartItemCount(userId);
         }
 
         public async Task<int> RemoveItem(int bookId)
         {
-            //using var transaction = _db.Database.BeginTransaction();
             string userId = GetUserId();
 
             if (string.IsNullOrEmpty(userId))
@@ -88,53 +90,50 @@ namespace ecommer.Repositories
             {
                 var cart = await GetCart(userId);
 
-                if (cart is null)
+                if (cart == null)
                     throw new Exception("Carrito no válido");
 
-                // Cart detail section
                 var cartItem = _db.CartDetails
-                                  .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.BookId == bookId);
+                    .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.BookId == bookId);
 
-                if (cartItem is null)
+                if (cartItem == null)
                     throw new Exception("No hay elementos en el carrito");
                 else if (cartItem.Quantity == 1)
                     _db.CartDetails.Remove(cartItem);
                 else
-                    cartItem.Quantity = cartItem.Quantity - 1;
+                    cartItem.Quantity--;
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                // Manejar la excepción de manera adecuada, como registrarla o notificarla
+                // Registra o notifica la excepción de manera adecuada
+                throw;
             }
 
-            var cartItemCount = await GetCartItemCount(userId);
-            return cartItemCount;
+            return await GetCartItemCount(userId);
         }
-
 
         public async Task<ShoppingCart> GetUserCart()
         {
-            var userId = GetUserId();
+            string userId = GetUserId();
 
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId))
                 throw new Exception("Usuario no válido");
 
             var shoppingCart = await _db.ShoppingCarts
-                                  .Include(a => a.CartDetails)
-                                  .ThenInclude(a => a.Book)
-                                  .ThenInclude(a => a.Genre)
-                                  .Where(a => a.UserId == userId)
-                                  .FirstOrDefaultAsync();
+                .Include(a => a.CartDetails)
+                .ThenInclude(a => a.Book)
+                .ThenInclude(a => a.Genre)
+                .Where(a => a.UserId == userId)
+                .FirstOrDefaultAsync();
 
             return shoppingCart;
         }
 
         public async Task<ShoppingCart> GetCart(string userId)
         {
-            var cart = await _db.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == userId);
-            return cart;
+            return await _db.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == userId);
         }
 
         public async Task<int> GetCartItemCount(string userId)
@@ -142,11 +141,9 @@ namespace ecommer.Repositories
             if (string.IsNullOrEmpty(userId))
                 throw new Exception("Usuario no válido");
 
-            var cartItemCount = await _db.CartDetails
+            return await _db.CartDetails
                 .Where(cd => cd.ShoppingCart.UserId == userId)
                 .CountAsync();
-
-            return cartItemCount;
         }
 
         public async Task<bool> DoCheckout()
@@ -155,15 +152,14 @@ namespace ecommer.Repositories
 
             try
             {
-                // Lógica para mover datos de cartDetail a order y order detail, luego eliminar cartDetail
-                var userId = GetUserId();
+                string userId = GetUserId();
 
                 if (string.IsNullOrEmpty(userId))
                     throw new Exception("El usuario no ha iniciado sesión");
 
                 var cart = await GetCart(userId);
 
-                if (cart is null)
+                if (cart == null)
                     throw new Exception("Carrito no válido");
 
                 var cartDetail = _db.CartDetails
@@ -181,7 +177,7 @@ namespace ecommer.Repositories
                 };
 
                 _db.Orders.Add(order);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
                 foreach (var item in cartDetail)
                 {
@@ -196,18 +192,18 @@ namespace ecommer.Repositories
                     _db.OrderDetails.Add(orderDetail);
                 }
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
-                // Eliminar los detalles del carrito
                 _db.CartDetails.RemoveRange(cartDetail);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
                 transaction.Commit();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Manejar la excepción de manera adecuada, como registrarla o notificarla
+                // Registra o notifica la excepción de manera adecuada
+                transaction.Rollback();
                 return false;
             }
         }
@@ -215,8 +211,7 @@ namespace ecommer.Repositories
         private string GetUserId()
         {
             var principal = _httpContextAccessor.HttpContext.User;
-            string userId = _userManager.GetUserId(principal);
-            return userId;
+            return _userManager.GetUserId(principal);
         }
     }
 }
