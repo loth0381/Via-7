@@ -1,0 +1,110 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h2 class="text-center mb-4">¿En qué podemos ayudarte?</h2>
+
+            <form class="mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Buscar en Ayuda">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+                </div>
+            </form>
+
+            <div class="accordion" id="ayudaAccordion">
+                <!-- Sección de Compras -->
+                <div class="card">
+                    <div class="card-header" id="comprasHeading">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#comprasCollapse" aria-expanded="true" aria-controls="comprasCollapse">
+                                <i class="fas fa-shopping-cart"></i> Compras
+                            </button>
+                        </h3>
+                    </div>
+
+                    <div id="comprasCollapse" class="collapse show" aria-labelledby="comprasHeading" data-parent="#ayudaAccordion">
+                        <div class="card-body animate__animated animate__fadeIn">
+                            <!-- Contenido de la sección de Compras -->
+                            Información sobre cómo realizar y gestionar compras.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Ventas -->
+                <div class="card">
+                    <div class="card-header" id="ventasHeading">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link text-decoration-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ventasCollapse" aria-expanded="false" aria-controls="ventasCollapse">
+                                <i class="fas fa-dollar-sign"></i> Ventas
+                            </button>
+                        </h3>
+                    </div>
+
+                    <div id="ventasCollapse" class="collapse" aria-labelledby="ventasHeading" data-parent="#ayudaAccordion">
+                        <div class="card-body animate__animated animate__fadeIn">
+                            <!-- Contenido de la sección de Ventas -->
+                            Información sobre cómo gestionar y realizar ventas.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Ayuda sobre tu cuenta -->
+                <div class="card">
+                    <div class="card-header" id="cuentaHeading">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link text-decoration-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cuentaCollapse" aria-expanded="false" aria-controls="cuentaCollapse">
+                                <i class="fas fa-user"></i> Ayuda sobre tu cuenta
+                            </button>
+                        </h3>
+                    </div>
+
+                    <div id="cuentaCollapse" class="collapse" aria-labelledby="cuentaHeading" data-parent="#ayudaAccordion">
+                        <div class="card-body animate__animated animate__fadeIn">
+                            <!-- Contenido de la sección de Ayuda sobre tu cuenta -->
+                            Información relacionada con la gestión de tu cuenta.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nueva Sección -->
+                <div class="card">
+                    <div class="card-header" id="nuevaSeccionHeading">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link text-decoration-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#nuevaSeccionCollapse" aria-expanded="false" aria-controls="nuevaSeccionCollapse">
+                                <i class="fas fa-newspaper"></i> Nueva Sección
+                            </button>
+                        </h3>
+                    </div>
+
+                    <div id="nuevaSeccionCollapse" class="collapse" aria-labelledby="nuevaSeccionHeading" data-parent="#ayudaAccordion">
+                        <div class="card-body animate__animated animate__fadeIn">
+                            <!-- Contenido de la nueva sección -->
+                            Información de la nueva sección.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<script>
+    loadCartCount();
+
+    async function loadCartCount() {
+        try {
+            var response = await fetch(`/Cart/GetTotalItemInCart`);
+            if (response.status === 200) {
+                var result = await response.json();
+                var cartCountEl = document.getElementById("cartCount");
+                cartCountEl.innerHTML = result;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+</script>

@@ -72,6 +72,11 @@ app.MapControllerRoute(
     pattern: "Checkout/Confirmation",
     defaults: new { controller = "Checkout", action = "Confirmation" }
 );
+app.MapControllerRoute(
+    name: "help",
+    pattern: "Ayuda",
+    defaults: new { controller = "Home", action = "Ayuda" }
+);
 
 app.MapRazorPages();
 

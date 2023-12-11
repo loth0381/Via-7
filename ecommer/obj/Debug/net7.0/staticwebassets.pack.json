@@ -65,8 +65,24 @@
       "PackagePath": "staticwebassets\\images\\NoImage.png"
     },
     {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\Polera-con-capucha-Relaxed-Fit---Beige-grisaceo---H-M-PE.webp",
+      "PackagePath": "staticwebassets\\images\\Polera-con-capucha-Relaxed-Fit---Beige-grisaceo---H-M-PE.webp"
+    },
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\Polo-de-punto-con-estampado-Relaxed-Fit---Verde-oscuro-Metallica---H-M-PE.webp",
+      "PackagePath": "staticwebassets\\images\\Polo-de-punto-con-estampado-Relaxed-Fit---Verde-oscuro-Metallica---H-M-PE.webp"
+    },
+    {
       "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\Reloj-mecánico-o-cuarzo-1024x623.jpg",
       "PackagePath": "staticwebassets\\images\\Reloj-mecánico-o-cuarzo-1024x623.jpg"
+    },
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\Short-de-buzo-Regular-Fit---Gris-acero---H-M-PE.webp",
+      "PackagePath": "staticwebassets\\images\\Short-de-buzo-Regular-Fit---Gris-acero---H-M-PE.webp"
+    },
+    {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\Short-de-buzo-Regular-Fit---Negro---H-M-PE.webp",
+      "PackagePath": "staticwebassets\\images\\Short-de-buzo-Regular-Fit---Negro---H-M-PE.webp"
     },
     {
       "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\images\\curren-men-azul.jpg",

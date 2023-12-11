@@ -30,6 +30,7 @@ namespace ecommer.Controllers
             return View(bookModel);
         }
 
+
         public IActionResult Privacy()
         {
             return View();
@@ -40,5 +41,10 @@ namespace ecommer.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        public IActionResult Ayuda()
+        {
+            return View();
+        }
     }
+
 }
