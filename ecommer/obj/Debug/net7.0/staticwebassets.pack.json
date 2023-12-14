@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets\\ecommer.bundle.scp.css"
     },
     {
+      "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\css\\animaciones.css",
+      "PackagePath": "staticwebassets\\css\\animaciones.css"
+    },
+    {
       "Id": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\css\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\css\\bootstrap.min.css"
     },

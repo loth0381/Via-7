@@ -1,44 +1,50 @@
 ﻿@model ecommer.ViewModels.CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
 @using (Html.BeginForm("ProcessCheckout", "Checkout", FormMethod.Post, new { id = "checkout-form" }))
 {
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Checkout</title>
-    <!-- Agrega enlaces a las hojas de estilo CSS aquí -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://bootswatch.com/5.3.2/minty/bootstrap.min.css">
-    <style>
-        /* Personaliza estilos específicos aquí */
-        .checkout-container {
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-        .checkout-card {
-            border: none;
-            border-radius: 10px;
-        }
-        .checkout-title {
-            background-color: #343a40;
-            color: #ffffff;
-            padding: 10px;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-        .checkout-img-thumbnail {
-            max-width: 80px;
-            max-height: 100px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container checkout-container">
-        <div class="row">
-            <!-- Columna izquierda para detalles de envío -->
-            <div class="col-md-6">
-                <h2 class="checkout-title">Detalles de Envío</h2>
-                @using (Html.BeginForm("ProcessCheckout", "Checkout", FormMethod.Post))
-                {
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Checkout</title>
+        <!-- Agrega enlaces a las hojas de estilo CSS aquí -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://bootswatch.com/5.3.2/minty/bootstrap.min.css">
+        <script src="https://js.stripe.com/v3/"></script>
+        <style>
+            /* Personaliza estilos específicos aquí */
+            .checkout-container {
+                background-color: #f8f9fa;
+                padding: 20px;
+            }
+
+            .checkout-card {
+                border: none;
+                border-radius: 10px;
+            }
+
+            .checkout-title {
+                background-color: #343a40;
+                color: #ffffff;
+                padding: 10px;
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+
+            .checkout-img-thumbnail {
+                max-width: 80px;
+                max-height: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container checkout-container">
+            <div class="row">
+                <!-- Columna izquierda para detalles de envío -->
+                <div class="col-md-6">
+                    <h2 class="checkout-title">Detalles de Envío</h2>
                     @Html.AntiForgeryToken()
 
                     <div class="form-group">
@@ -65,72 +71,73 @@
                         @Html.ValidationMessageFor(model => model.ZipCode)
                     </div>
 
-                }
+                    <hr />
+                </div>
 
-                <hr />
-            </div>
-
-            <!-- Columna derecha para el método de pago -->
-            <div class="col-md-6">
-                <h2 class="checkout-title">Método de Pago</h2>
-                <div class="card checkout-card">
-                    <div class="card-body">
-                        <label for="card-element">Tarjeta de crédito o débito</label>
-                        <div id="card-element">
-                            <!-- Elemento para mostrar el formulario de tarjeta de Stripe -->
+                <!-- Columna derecha para el método de pago -->
+                <div class="col-md-6">
+                    <h2 class="checkout-title">Método de Pago</h2>
+                    <div class="card checkout-card">
+                        <div class="card-body">
+                            <label for="card-element">Tarjeta de crédito o débito</label>
+                            <div id="card-element">
+                                <!-- Elemento para mostrar el formulario de tarjeta de Stripe -->
+                            </div>
+                            <!-- Utiliza un contenedor para mostrar errores de validación -->
+                            <div id="card-errors" role="alert"></div>
                         </div>
-                        <!-- Utiliza un contenedor para mostrar errores de validación -->
-                        <div id="card-errors" role="alert"></div>
                     </div>
                 </div>
             </div>
+
+            <!-- Agregar una tabla para mostrar los detalles del carrito -->
+            <table class="table table-bordered table-striped my-4">
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.CartDetails != null)
+                    {
+                        foreach (var item in Model.CartDetails)
+                        {
+                            <tr>
+                                <td>
+                                    @if (string.IsNullOrEmpty(item.Book.Image))
+                                    {
+                                        <img src="/images/NoImage.png" class="img-thumbnail checkout-img-thumbnail" alt="No Image" />
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/@item.Book.Image" class="img-thumbnail checkout-img-thumbnail" alt="@item.Book.BookName" />
+                                    }
+                                </td>
+                                <td>@item.Book.BookName</td>
+                                <td>@item.Quantity</td>
+                                <td>$@item.Book.Price</td>
+                                <td>$@(item.Quantity * item.Book.Price)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+            <p class="text-right">Total: $@(Model.CartDetails?.Sum(item => item.Quantity * item.Book.Price) ?? 0)</p>
+
+            <button type="submit" id="realizar-pedido" class="btn btn-primary" disabled>Realizar Pedido</button>
+
         </div>
 
-        <!-- Agregar una tabla para mostrar los detalles del carrito -->
-        <table class="table table-bordered table-striped my-4">
-            <thead>
-                <tr>
-                    <th>Imagen</th>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.CartDetails)
-                {
-                    <tr>
-                        <td>
-                            @if (string.IsNullOrEmpty(item.Book.Image))
-                            {
-                                <img src="/images/NoImage.png" class="img-thumbnail checkout-img-thumbnail" alt="No Image" />
-                            }
-                            else
-                            {
-                                <img src="/images/@item.Book.Image" class="img-thumbnail checkout-img-thumbnail" alt="@item.Book.BookName" />
-                            }
-                        </td>
-                        <td>@item.Book.BookName</td>
-                        <td>@item.Quantity</td>
-                        <td>$@item.Book.Price</td>
-                        <td>$@(item.Quantity * item.Book.Price)</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <hr />
 
-        <p class="text-right">Total: $@(Model.CartDetails.Sum(item => item.Quantity * item.Book.Price))</p>
-
-        <a asp-controller="Home" asp-action="Privacy" id="realizar-pedido" class="btn btn-primary">Realizar Pedido</a>
-
-    </div>
-
-    <hr />
-    @section scripts {
-        <script src="https://js.stripe.com/v3/"></script>
+        @section scripts {
         <script>
-            var stripe = Stripe('pk_test_51NhKybH28o0wLQaAgW5ShASKKcBMFiwKdY20TlnCTQuVG3Qgd7V0Ck39NSYeqIZ8AVMVjNTRPzptqCLsEMyamqJN00sTdRjrqQ');
+            var stripe = Stripe('@Model.StripePublishableKey');
             var elements = stripe.elements();
 
             // Personaliza el estilo de los elementos de Stripe
@@ -164,8 +171,8 @@
                 }
             });
 
-            var form = document.querySelector('form');
-            var submitButton = document.getElementById('submit');
+            var form = document.getElementById('checkout-form');
+            var submitButton = document.getElementById('realizar-pedido');
 
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
@@ -179,11 +186,11 @@
                     }
                 });
             });
+
             var fullName = document.getElementById("FullName");
             var address = document.getElementById("Address");
             var city = document.getElementById("City");
             var zipCode = document.getElementById("ZipCode");
-            var realizarPedidoButton = document.getElementById("realizar-pedido");
 
             // Agrega un evento para comprobar los campos cuando cambien
             fullName.addEventListener("input", checkForm);
@@ -194,17 +201,17 @@
             // Función para comprobar los campos y habilitar/deshabilitar el botón
             function checkForm() {
                 if (fullName.value && address.value && city.value && zipCode.value) {
-                    realizarPedidoButton.removeAttribute("disabled");
+                    submitButton.removeAttribute("disabled");
                 } else {
-                    realizarPedidoButton.setAttribute("disabled", "disabled");
+                    submitButton.setAttribute("disabled", "disabled");
                 }
             }
 
             // Inicialmente, deshabilita el botón si algún campo está vacío
             checkForm();
+
             function stripeTokenHandler(token) {
                 // Inserta el token en un campo oculto para enviarlo al servidor
-                var form = document.querySelector('form');
                 var hiddenInput = document.createElement('input');
                 hiddenInput.setAttribute('type', 'hidden');
                 hiddenInput.setAttribute('name', 'StripeToken');
@@ -216,6 +223,6 @@
             }
         </script>
     }
-</body>
-</html>
+    </body>
+    </html>
 }

@@ -19,6 +19,12 @@ namespace ecommer.Controllers
         }
 
         [HttpGet]
+        public IActionResult Confirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             try
@@ -58,7 +64,7 @@ namespace ecommer.Controllers
             if (!ModelState.IsValid)
             {
                 // Si el modelo no es válido, vuelve a la página de "Checkout" con los errores.
-                return View("Index", model);
+                return View("Confirmation", model);
             }
 
             try
@@ -79,6 +85,9 @@ namespace ecommer.Controllers
 
                 // Después de procesar el pago con éxito, puedes guardar la información del pedido en la base de datos, si es necesario.
 
+                // Marca que se ha realizado el pedido con éxito
+                model.OrderPlaced = true;
+
                 // Redirige al usuario a la página de "Confirmación" después del checkout exitoso.
                 return RedirectToAction("Confirmation");
             }
@@ -90,6 +99,6 @@ namespace ecommer.Controllers
             }
         }
 
-        // Resto de las acciones del controlador (Confirmation, EmptyCart, Error) aquí.
+        // Resto de las acciones del controlador (EmptyCart, Error) aquí.
     }
 }

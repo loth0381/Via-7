@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Dq8Ygf2gT+8kz4PRpzspewvi/iVdnd1LCh8oyv2OQPo=",
+  "Hash": "UOgDsTA1A2IY18l4fp08M/ICvKraeckhjStGn+hEKo4=",
   "Source": "ecommer",
   "BasePath": "_content/ecommer",
   "Mode": "Default",
@@ -1069,6 +1069,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\obj\\Debug\\net7.0\\scopedcss\\projectbundle\\ecommer.bundle.scp.css"
+    },
+    {
+      "Identity": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\css\\animaciones.css",
+      "SourceId": "ecommer",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\",
+      "BasePath": "_content/ecommer",
+      "RelativePath": "css/animaciones.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\animaciones.css"
     },
     {
       "Identity": "D:\\01 proyect asp.net core C#\\ecommer\\ecommer\\wwwroot\\css\\bootstrap.min.css",

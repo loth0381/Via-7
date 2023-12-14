@@ -5,7 +5,7 @@ namespace ecommer.ViewModels
 {
     public class CheckoutViewModel
     {
-        public Order order { get; set; }
+        public Order Order { get; set; }
         public ShoppingCart Cart { get; set; }
 
         [Required(ErrorMessage = "El nombre es obligatorio.")]
@@ -25,5 +25,8 @@ namespace ecommer.ViewModels
         public string StripeToken { get; set; }
 
         public List<CartDetail> CartDetails { get; set; }
+
+        // Nueva propiedad para la confirmación
+        public bool OrderPlaced { get; set; }
     }
 }
